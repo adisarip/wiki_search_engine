@@ -13,13 +13,13 @@ class WikiIndexer:
 
     # Constructor
     def __init__(self,
-                 index_path_parm):
+                 index_file_parm):
         self.m_stemmer = SnowballStemmer("english", ignore_stopwords=True)
         self.ml_my_stop_words = ['she', 'www', 'http', 'ref', '://']
         self.ml_stop_words = set(stopwords.words('english'))
         self.ml_stop_words.update(self.ml_my_stop_words)
         self.ml_puncts = string.punctuation
-        self.ms_index_file = index_path_parm + '/wiki_index.csv'
+        self.ms_index_file = index_file_parm
 
     def getBagOfWords(self,
                       data_parm):

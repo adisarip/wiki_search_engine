@@ -17,6 +17,7 @@ class WSE:
     d_wiki_index  = defaultdict(list)
     d_query_index = defaultdict(list)
     d_query_term_len = dict()
+    l_field_names = ['title', 'body', 'infobox', 'categories', 'ref']
 
     def __init__(self,
                  index_path_parm,
@@ -43,16 +44,19 @@ class WSE:
         l_punct = string.punctuation
         stemmer = SnowballStemmer("english", ignore_stopwords=True)
         l_search_tokens = wordpunct_tokenize(search_string_parm)
+        l_search_tokens = list(set(l_search_tokens))
+
+        # Fix for field queries
+        for s_term in l_field_names:
+            l_search_tokens.remove(s_term)
+
         l_queries = list()
         for w in l_search_tokens:
             if w not in l_stop_words and w not in l_punct:
                 sw = stemmer.stem(w)
                 if len(sw)>2:
                     l_queries.append(sw)
-        l_queries = list(dict.fromkeys(l_queries))
-        for q in l_queries:
-            if q in ['titl', 'bodi']:
-                l_queries.remove(q)
+        #l_queries = list(dict.fromkeys(l_queries))
         return l_queries
 
     # get value with the smallest key
@@ -93,17 +97,13 @@ class WSE:
 
     # get query results
     def getQueryResult(self,
-                       l_query_parm):
+                       l_queries_parm):
         l_result = list()
-        for s_term in l_query_parm:
-            l_doc = WSE.d_wiki_index[s_term]
-            WSE.d_query_index[s_term] = l_doc
-            WSE.d_query_term_len[s_term] = len(l_doc)
-        if len(l_query_parm) == 1:
-            l_result = WSE.d_query_index[l_query_parm[0]]
-        elif len(l_query_parm) == 2:
-            l_result = self.getMergedPostingsList(WSE.d_query_index[l_query_parm[0]],
-                                                  WSE.d_query_index[l_query_parm[1]])
+        if len(l_queries_parm) == 1:
+            l_result = WSE.d_query_index[l_queries_parm[0]]
+        elif len(l_queries_parm) == 2:
+            l_result = self.getMergedPostingsList(WSE.d_query_index[l_queries_parm[0]],
+                                                  WSE.d_query_index[l_queries_parm[1]])
         else:
             s_term1 = self.getSmallestTerm(WSE.d_query_term_len)
             WSE.d_query_term_len.pop(s_term1)
@@ -111,7 +111,7 @@ class WSE:
             WSE.d_query_term_len.pop(s_term2)
 
             l_result = self.getMergedPostingsList(WSE.d_query_index[s_term1],
-                                             WSE.d_query_index[s_term2])
+                                                  WSE.d_query_index[s_term2])
             WSE.d_query_index.pop(s_term1)
             WSE.d_query_index.pop(s_term2)
 
@@ -157,15 +157,19 @@ class WSE:
     
         # read the list of search queries
         f_search = open(self.ms_search_file, "r")
-        l_search = f_search.readlines()
+        l_search_queries = f_search.readlines()
         f_search.close()
 
         d_relevant_files = defaultdict(list)
-        for s_search in l_search:
+        for s_search in l_search_queries:
             s_search = s_search.rstrip()
             l_queries = self.getQueryString(s_search.lower())
             WSE.d_query_index.clear()
             WSE.d_query_term_len.clear()
+            for s_term in s_search:
+                l_doc = WSE.d_wiki_index[s_term]
+                WSE.d_query_index[s_term] = l_doc
+                WSE.d_query_term_len[s_term] = len(l_doc)
             l_result_docs = self.getQueryResult(l_queries)
             d_relevant_files[s_search] = self.getKRelevantDocs(l_result_docs, 10)
         return d_relevant_files

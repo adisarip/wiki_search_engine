@@ -5,4 +5,4 @@ test_enwiki.xml
 queries.txt
 queries.bkp.txt
 results.txt
-
+__pychache__/

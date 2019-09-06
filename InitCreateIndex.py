@@ -16,6 +16,7 @@ def main():
     s_index_path = sys.argv[2]
     if s_index_path[-1] != '/':
         s_index_path + '/'
+    s_index_file = s_index_path + '/wiki_index.csv'
     s_data_path = os.getcwd()+"/data/"
 
     # create data and index directories (mkdir -p)
@@ -26,7 +27,7 @@ def main():
     d_bow = o_wiki_parser.extractXmlData()
     print ("[INFO] XML Parsing Completed")
 
-    o_wiki_indexer = wikindexer.WikiIndexer(s_index_path)
+    o_wiki_indexer = wikindexer.WikiIndexer(s_index_file)
     o_wiki_indexer.run(d_bow)
     print ("[INFO] Index Creation Completed")
 
