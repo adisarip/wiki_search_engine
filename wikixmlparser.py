@@ -5,8 +5,10 @@
 import xml.etree.ElementTree as xtree
 import string
 import re
+import os
 from unidecode import unidecode
 from collections import defaultdict
+import json
 
 class WikiXmlParser:
     'Parser to parse the Wiki dump XML file and create the data set'
@@ -40,6 +42,8 @@ class WikiXmlParser:
     def extractXmlData(self):
         n_page_count = 0
         n_doc_count = 0
+        n_block_count = 0
+        n_max_doc_count = 1000 # maximum docs under each block
         re_clean_br_pattern = re.compile(r"</{0,}br>")
         d_bow = defaultdict(list)
 
@@ -80,21 +84,31 @@ class WikiXmlParser:
                     s_page_data_size = len(s_page_data)
                     # create a document only if it isn't a redirection or a template
                     if (not b_is_redirect and not b_is_template and s_page_data_size > 0):
+                        if (n_doc_count % 1000 == 0):
+                            n_doc_count = 0
+                            n_block_count = n_block_count + 1
                         n_doc_count = n_doc_count + 1
                         s_page_data = self.cleanupData(s_page_data)
                         s_page_data = re_clean_br_pattern.sub(" ", s_page_data)
-                        #f_page = open(self.ms_data_path + s_page_id, "w")
-                        f_page = open(self.ms_data_path + str(n_doc_count), "w")
+
+                        s_file_name = str(n_block_count) + "." + str(n_doc_count)
+                        s_file_path = self.ms_data_path + str(n_block_count)
+                        if not os.path.exists(s_file_path):
+                            os.makedirs(s_file_path)
+
+                        f_page = open(s_file_path + "/" + s_file_name, "w+")
                         f_page.write(s_page_title+"\n")
                         f_page.write(str(s_page_data))
                         f_page.close()
-                        #d_bow[s_page_id] = s_page_data
-                        d_bow[str(n_doc_count)] = s_page_data
+                        #d_bow[str(n_doc_count)] = s_page_data
                 elem.clear()
+
+        with open(self.ms_data_path+"/block.data", "w+") as f_block_data:
+            f_block_data.write(str(n_block_count)+","+str(n_doc_count))
 
         print ("[INFO] Number of pages read:", n_page_count)
         print ("[INFO] Number of documents created:", n_doc_count)
-        return d_bow
+        #return d_bow
 
 
 
