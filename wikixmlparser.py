@@ -43,7 +43,7 @@ class WikiXmlParser:
         n_page_count = 0
         n_doc_count = 0
         n_block_count = 0
-        n_max_doc_count = 1000 # maximum docs under each block
+        n_max_doc_count = 10000 # maximum docs under each block
         re_clean_br_pattern = re.compile(r"</{0,}br>")
         d_bow = defaultdict(list)
 
@@ -96,11 +96,10 @@ class WikiXmlParser:
                         if not os.path.exists(s_file_path):
                             os.makedirs(s_file_path)
 
-                        f_page = open(s_file_path + "/" + s_file_name, "w+")
-                        f_page.write(s_page_title+"\n")
-                        f_page.write(str(s_page_data))
-                        f_page.close()
-                        #d_bow[str(n_doc_count)] = s_page_data
+                        # Write page data into file
+                        with open(s_file_path + "/" + s_file_name, "w+") as f_page:
+                            f_page.write(s_page_title+"\n")
+                            f_page.write(str(s_page_data))
                 elem.clear()
 
         with open(self.ms_data_path+"/block.data", "w+") as f_block_data:

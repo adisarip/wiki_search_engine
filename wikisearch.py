@@ -2,8 +2,8 @@
 
 # Import all the required packages
 import os
-import csv
 import sys
+import json
 import string
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
@@ -14,26 +14,43 @@ from collections import defaultdict
 class WSE:
     'A search engine running on wikipedia data corpus'
     #Class variables
-    d_wiki_index  = defaultdict(list)
+    #d_wiki_index  = defaultdict(list)
     d_query_index = defaultdict(list)
-    d_query_term_len = dict()
+    d_query_term_len = defaultdict(int)
     l_field_names = ['title', 'body', 'infobox', 'categories', 'ref']
 
     def __init__(self,
                  index_path_parm,
+                 data_path_parm,
                  search_file_parm):
         self.ms_index_path = index_path_parm
+        self.ms_data_path = data_path_parm
         self.ms_search_file = search_file_parm
+        self.mn_blocks = self.getBlocksData()
+
+    def getBlocksData(self):
+        with open(self.ms_data_path+"/block.data", "r") as f_block_data:
+            s_last_block, s_last_block_count = f_block_data.readline().split(",")
+        n_blocks = int(s_last_block)
+        n_last_block_count = int(s_last_block_count)
+        return n_blocks
 
     # load the index file
     def loadIndex(self,
-                  index_path_parm):
-        f_index = open(index_path_parm, 'r')
-        for s_line in f_index:
-            s_line = s_line.rstrip()
-            l_tokens = s_line.split(',')
-            WSE.d_wiki_index[l_tokens[0]] = l_tokens[1:]
-        #print(len(WSE.d_wiki_index))
+                  l_terms_parm):
+        WSE.d_query_index.clear()
+        WSE.d_query_term_len.clear()
+        for block in range(1, self.mn_blocks+1):
+            s_index_file = self.ms_index_path + str(block) + ".json"
+            with open(s_index_file, 'r') as f_index:
+                d_wiki_index = json.load(f_index)
+            for s_term in l_terms_parm:
+                try:
+                    l_doc = d_wiki_index[s_term]
+                    #print(s_term, l_doc)
+                    WSE.d_query_index[s_term] += l_doc
+                    WSE.d_query_term_len[s_term] += len(l_doc)
+                except: pass
 
     # creating query string from search string for lookup
     def getQueryString(self,
@@ -47,8 +64,10 @@ class WSE:
         l_search_tokens = list(set(l_search_tokens))
 
         # Fix for field queries
-        for s_term in l_field_names:
-            l_search_tokens.remove(s_term)
+        for s_term in WSE.l_field_names:
+            try:
+                l_search_tokens.remove(s_term)
+            except: pass
 
         l_queries = list()
         for w in l_search_tokens:
@@ -60,8 +79,8 @@ class WSE:
         return l_queries
 
     # get value with the smallest key
-    def getSmallestTerm(self,
-                        d_parm):
+    def getSmallestPostingListTerm(self,
+                                   d_parm):
         if len(d_parm) == 1:
             s = list(d_parm.keys())[0]
         else:
@@ -80,8 +99,10 @@ class WSE:
     def getMergedPostingsList(self,
                               list1_parm,
                               list2_parm):
-        l1 = [int(x.split(":")[1]) for x in list1_parm]
-        l2 = [int(x.split(":")[1]) for x in list2_parm]
+        l1 = [float(x.split(":")[1]) for x in list1_parm]
+        l2 = [float(x.split(":")[1]) for x in list2_parm]
+        #print(l1)
+        #print(l2)
         l_rlist = list()
         p1 = p2 = 0
         while (p1 < len(list1_parm) and p2 < len(list2_parm)):
@@ -97,17 +118,17 @@ class WSE:
 
     # get query results
     def getQueryResult(self,
-                       l_queries_parm):
+                       l_terms_parm):
         l_result = list()
-        if len(l_queries_parm) == 1:
-            l_result = WSE.d_query_index[l_queries_parm[0]]
-        elif len(l_queries_parm) == 2:
-            l_result = self.getMergedPostingsList(WSE.d_query_index[l_queries_parm[0]],
-                                                  WSE.d_query_index[l_queries_parm[1]])
+        if len(l_terms_parm) == 1:
+            l_result = WSE.d_query_index[l_terms_parm[0]]
+        elif len(l_terms_parm) == 2:
+            l_result = self.getMergedPostingsList(WSE.d_query_index[l_terms_parm[0]],
+                                                  WSE.d_query_index[l_terms_parm[1]])
         else:
-            s_term1 = self.getSmallestTerm(WSE.d_query_term_len)
+            s_term1 = self.getSmallestPostingListTerm(WSE.d_query_term_len)
             WSE.d_query_term_len.pop(s_term1)
-            s_term2 = self.getSmallestTerm(WSE.d_query_term_len)
+            s_term2 = self.getSmallestPostingListTerm(WSE.d_query_term_len)
             WSE.d_query_term_len.pop(s_term2)
 
             l_result = self.getMergedPostingsList(WSE.d_query_index[s_term1],
@@ -133,6 +154,7 @@ class WSE:
         l_relevant = list()
         n_doc_count = 0
         for s_entry in l_doc_id_parm:
+            #print(s_entry)
             s_freq, s_doc_id = s_entry.split(":")
             d_query_freq_doc_list[int(s_freq)].append(s_doc_id)
 
@@ -152,9 +174,6 @@ class WSE:
 
     # Search starts here
     def run(self):
-        # load the wiki index
-        self.loadIndex(self.ms_index_path)
-    
         # read the list of search queries
         f_search = open(self.ms_search_file, "r")
         l_search_queries = f_search.readlines()
@@ -163,13 +182,12 @@ class WSE:
         d_relevant_files = defaultdict(list)
         for s_search in l_search_queries:
             s_search = s_search.rstrip()
-            l_queries = self.getQueryString(s_search.lower())
-            WSE.d_query_index.clear()
-            WSE.d_query_term_len.clear()
-            for s_term in s_search:
-                l_doc = WSE.d_wiki_index[s_term]
-                WSE.d_query_index[s_term] = l_doc
-                WSE.d_query_term_len[s_term] = len(l_doc)
-            l_result_docs = self.getQueryResult(l_queries)
+            l_terms = self.getQueryString(s_search.lower())
+
+            # load the wiki index
+            self.loadIndex(l_terms)
+
+            l_result_docs = self.getQueryResult(l_terms)
+            #print(l_result_docs)
             d_relevant_files[s_search] = self.getKRelevantDocs(l_result_docs, 10)
         return d_relevant_files

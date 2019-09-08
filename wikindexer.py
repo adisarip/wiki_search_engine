@@ -2,12 +2,14 @@
 
 # Import all the required packages
 import csv
+import sys
+import json
 import string
+
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
 from nltk.tokenize import wordpunct_tokenize
 from collections import defaultdict
-import sys
 
 class WikiIndexer:
     'Indexing Wikipedia XML dump file, for search queries.'
@@ -46,11 +48,9 @@ class WikiIndexer:
     def createIndex(self,
                     index_file_parm,
                     post_list_parm):
-        with open(index_file_parm, 'w+') as f_csvfile:
-            o_index_writer = csv.writer(f_csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-            for s_key, l_values in post_list_parm.items():
-                o_index_writer.writerow([s_key] + l_values)
-    
+        with open(index_file_parm, 'w+') as f_json:
+            json.dump(post_list_parm, f_json)
+
     def getBlocksData(self):
         with open(self.ms_data_path+"/block.data", "r") as f_block_data:
             s_last_block, s_last_block_count = f_block_data.readline().split(",")
@@ -64,7 +64,7 @@ class WikiIndexer:
         n_blocks, n_last_block_count = self.getBlocksData()
         # Get the Bag of Words (for all documents)
         for n_block in range(1, n_blocks+1):
-            print("Processing Block:", n_block)
+            print("[INFO] Processing Block:", n_block)
             for n_file in range(1, self.mn_max_block_doc_count+1):
                 if (n_block == n_blocks and n_file == n_last_block_count+1):
                     break
@@ -82,10 +82,7 @@ class WikiIndexer:
                         if (s_last_doc_id != s_data_file_name):
                             d_postings_list[s_term].append(s_entry)
             # Creating block wise index files
-            s_index_file = self.ms_index_path + str(n_block) + ".csv"
+            s_index_file = self.ms_index_path + str(n_block) + ".json"
             self.createIndex(s_index_file, d_postings_list)
             d_postings_list.clear()
-        # Creating the Index File
-        #s_index_file = self.ms_index_path + "wiki_index.csv"
-        #self.createIndex(s_index_file, d_postings_list)
 
