@@ -8,10 +8,10 @@ import re
 import os
 from unidecode import unidecode
 from collections import defaultdict
-import json
 
 class WikiXmlParser:
     'Parser to parse the Wiki dump XML file and create the data set'
+    n_max_doc_count = 10000 # maximum docs under each block
     # Initialize member data
     def __init__(self,
                  xml_dump_file_parm,
@@ -43,7 +43,6 @@ class WikiXmlParser:
         n_page_count = 0
         n_doc_count = 0
         n_block_count = 0
-        n_max_doc_count = 10000 # maximum docs under each block
         re_clean_br_pattern = re.compile(r"</{0,}br>")
         d_bow = defaultdict(list)
 
@@ -84,9 +83,10 @@ class WikiXmlParser:
                     s_page_data_size = len(s_page_data)
                     # create a document only if it isn't a redirection or a template
                     if (not b_is_redirect and not b_is_template and s_page_data_size > 0):
-                        if (n_doc_count % 1000 == 0):
+                        if (n_doc_count % WikiXmlParser.n_max_doc_count == 0):
                             n_doc_count = 0
                             n_block_count = n_block_count + 1
+                            print("[Info] Parsing Block:", n_block_count)
                         n_doc_count = n_doc_count + 1
                         s_page_data = self.cleanupData(s_page_data)
                         s_page_data = re_clean_br_pattern.sub(" ", s_page_data)

@@ -3,7 +3,7 @@
 # Import all the required packages
 import os
 import sys
-import json
+import csv
 import string
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
@@ -40,17 +40,21 @@ class WSE:
                   l_terms_parm):
         WSE.d_query_index.clear()
         WSE.d_query_term_len.clear()
-        for block in range(1, self.mn_blocks+1):
-            s_index_file = self.ms_index_path + str(block) + ".json"
+        for n_block in range(1, self.mn_blocks+1):
+            print("[INFO] Searching Block:", n_block)
+            d_wiki_index = defaultdict(list)
+            s_index_file = self.ms_index_path + str(n_block) + ".csv"
             with open(s_index_file, 'r') as f_index:
-                d_wiki_index = json.load(f_index)
+                for s_line in f_index.readlines():
+                    l_tokens = s_line.rstrip().split(',')
+                    d_wiki_index[l_tokens[0]] = l_tokens[1:]
             for s_term in l_terms_parm:
                 try:
                     l_doc = d_wiki_index[s_term]
-                    #print(s_term, l_doc)
                     WSE.d_query_index[s_term] += l_doc
                     WSE.d_query_term_len[s_term] += len(l_doc)
                 except: pass
+            d_wiki_index.clear()
 
     # creating query string from search string for lookup
     def getQueryString(self,

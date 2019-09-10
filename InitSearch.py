@@ -27,7 +27,7 @@ def main():
         print("USAGE: python InitSearch.py path_to_index path_to_query_file path_to_result_file")
         sys.exit()
 
-    s_data_files_path      = os.getcwd()+'/data/'
+    s_data_files_path      = os.getcwd()+'/wikidata/'
     s_index_path           = sys.argv[1]
     if s_index_path[-1] != '/':
         s_index_path = s_index_path + '/'
