@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# This script is incrementally used to convert the index files
+# from 1.csv, 2.csv ... to alphanumeric key index files a.csv, b.csv ...
+# any alphanumeric index file >200MB will be further split into
+# fa.csv, fb.csv, ... and so on until maximum size of any index file is
+# less than 200 MB
+
 # Import all the required packages
 import os
 import sys
@@ -17,9 +23,6 @@ def main():
     l_num = list("0123456789")
     l_files = ["co", "re", "ma", "de", "in", "ca", "st", "pr", "se", "pa", "ar", "li", 
                "su", "di", "la", "po", "ch", "fi", "fo"]
-
-    s = "adi"
-    print (s[:4])
 
 '''
     for x1 in ["201"]:

@@ -29,17 +29,16 @@ def worker(q_data_blocks_parm,
             print(exp)
             pass
 
-
-
 def main(d_penv_parm):
 
     s_xml_dump_file = d_penv["xml_dump_file"]
     s_index_path    = d_penv["index_path"]
     s_data_path     = d_penv["data_path"]
 
-    #o_wiki_parser = wikixmlparser.WikiXmlParser(s_xml_dump_file, s_data_path)
-    #o_wiki_parser.extractXmlData()
-    #print ("[INFO] XML Parsing Completed")
+    o_wiki_parser = wikixmlparser.WikiXmlParser(s_xml_dump_file,
+                                                s_data_path)
+    o_wiki_parser.extractXmlData()
+    print ("[INFO] XML Parsing Completed")
 
     # Get data blocks info
     with open(s_data_path+"/block.data", "r") as f_block_data:
@@ -75,7 +74,6 @@ if __name__ == '__main__':
     s_index_path = sys.argv[2]
     if s_index_path[-1] != '/':
         s_index_path = s_index_path + '/'
-    #s_data_path = os.getcwd()+"/wikidata/"
     s_data_path = os.getcwd()+"/wikidata/"
 
     # create required directories (mkdir -p)

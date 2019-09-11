@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# Test script to show how to invoke multiple processes
+
 import multiprocessing as mp
 import time
 

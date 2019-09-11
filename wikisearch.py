@@ -14,7 +14,6 @@ from collections import defaultdict
 class WSE:
     'A search engine running on wikipedia data corpus'
     #Class variables
-    #d_wiki_index  = defaultdict(list)
     d_query_index = defaultdict(list)
     d_query_term_len = defaultdict(int)
     l_field_names = ['title', 'body', 'infobox', 'categories', 'ref']
@@ -27,13 +26,6 @@ class WSE:
         self.ms_data_path = data_path_parm
         self.ms_search_file = search_file_parm
         #self.mn_blocks = self.getBlocksData()
-
-#    def getBlocksData(self):
-#        with open(self.ms_data_path+"/block.data", "r") as f_block_data:
-#            s_last_block, s_last_block_count = f_block_data.readline().split(",")
-#        n_blocks = int(s_last_block)
-#        n_last_block_count = int(s_last_block_count)
-#        return n_blocks
 
     # load the index file
     def loadIndex(self,
@@ -82,7 +74,6 @@ class WSE:
                 sw = stemmer.stem(w)
                 if len(sw)>2:
                     l_queries.append(sw)
-        #l_queries = list(dict.fromkeys(l_queries))
         return l_queries
 
     # get value with the smallest key
@@ -109,8 +100,6 @@ class WSE:
                               list2_parm):
         l1 = [float(x.split(":")[1]) for x in list1_parm]
         l2 = [float(x.split(":")[1]) for x in list2_parm]
-        #print(l1)
-        #print(l2)
         l_rlist = list()
         p1 = p2 = 0
         while (p1 < len(list1_parm) and p2 < len(list2_parm)):
@@ -149,7 +138,6 @@ class WSE:
             WSE.d_query_term_len[s_term3] = len(l_result)
 
             self.getQueryResult(list(WSE.d_query_term_len.keys()))  # recursion
-
         return l_result
 
     # get top 'k' relevant documents
@@ -162,7 +150,6 @@ class WSE:
         l_relevant = list()
         n_doc_count = 0
         for s_entry in l_doc_id_parm:
-            #print(s_entry)
             s_freq, s_doc_id = s_entry.split(":")
             d_query_freq_doc_list[int(s_freq)].append(s_doc_id)
 
@@ -190,6 +177,7 @@ class WSE:
         d_relevant_files = defaultdict(list)
         for s_search in l_search_queries:
             s_search = s_search.rstrip()
+            # ignore empty lines in query file
             if (s_search == ""):
                 continue
             l_terms = self.getQueryString(s_search.lower())
@@ -198,6 +186,5 @@ class WSE:
             self.loadIndex(l_terms)
 
             l_result_docs = self.getQueryResult(l_terms)
-            #print(l_result_docs)
             d_relevant_files[s_search] = self.getKRelevantDocs(l_result_docs, 10)
         return d_relevant_files

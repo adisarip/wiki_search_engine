@@ -38,7 +38,6 @@ def main():
                                    s_data_files_path,
                                    s_search_queries_file)
     d_relevant_files = o_wiki_search.run()
-    #print(d_relevant_files)
 
     outputResults(s_data_files_path,
                   d_relevant_files,

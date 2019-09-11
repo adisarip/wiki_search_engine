@@ -107,8 +107,3 @@ class WikiXmlParser:
 
         print ("[INFO] Number of pages read:", n_page_count)
         print ("[INFO] Number of documents created:", n_doc_count)
-        #return d_bow
-
-
-
-

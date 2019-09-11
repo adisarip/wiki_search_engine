@@ -46,8 +46,6 @@ class WikiIndexer:
     def createIndex(self,
                     index_file_parm,
                     d_post_list_parm):
-        #with open(index_file_parm, 'w+') as f_json:
-        #    json.dump(d_post_list_parm, f_json)
         with open(index_file_parm, 'w+') as f_csvfile:
             o_index_writer = csv.writer(f_csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
             for s_key, l_values in d_post_list_parm.items():
@@ -63,14 +61,7 @@ class WikiIndexer:
     # Indexing begins here
     def run(self, n_block_parm, n_docs_parm):
         d_postings_list = defaultdict(list)
-        #n_blocks, n_last_block_count = self.getBlocksData()
-        # Get the Bag of Words (for all documents)
-        #for n_block in range(1, n_blocks+1):
-        #print("[INFO] Processing Block:", n_block)
-        #for n_file in range(1, WikiIndexer.n_max_doc_count+1):
         for n_file in range(1, n_docs_parm+1):
-            #if (n_block == n_blocks and n_file == n_last_block_count+1):
-            #    break
             s_data_file_name = str(n_block_parm) + "." + str(n_file)
             s_data_file = self.ms_data_path + str(n_block_parm) + "/" + s_data_file_name
             l_bow, d_word_freq = self.getBagOfWords(s_data_file)
