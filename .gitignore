@@ -1,8 +1,5 @@
-index/
-data/
+wikindex/
+wikidata/
 enwiki_articles26.xml
 test_enwiki.xml
-queries.txt
-queries.bkp.txt
-results.txt
 __pychache__/

@@ -26,35 +26,38 @@ class WSE:
         self.ms_index_path = index_path_parm
         self.ms_data_path = data_path_parm
         self.ms_search_file = search_file_parm
-        self.mn_blocks = self.getBlocksData()
+        #self.mn_blocks = self.getBlocksData()
 
-    def getBlocksData(self):
-        with open(self.ms_data_path+"/block.data", "r") as f_block_data:
-            s_last_block, s_last_block_count = f_block_data.readline().split(",")
-        n_blocks = int(s_last_block)
-        n_last_block_count = int(s_last_block_count)
-        return n_blocks
+#    def getBlocksData(self):
+#        with open(self.ms_data_path+"/block.data", "r") as f_block_data:
+#            s_last_block, s_last_block_count = f_block_data.readline().split(",")
+#        n_blocks = int(s_last_block)
+#        n_last_block_count = int(s_last_block_count)
+#        return n_blocks
 
     # load the index file
     def loadIndex(self,
                   l_terms_parm):
         WSE.d_query_index.clear()
         WSE.d_query_term_len.clear()
-        for n_block in range(1, self.mn_blocks+1):
-            print("[INFO] Searching Block:", n_block)
-            d_wiki_index = defaultdict(list)
-            s_index_file = self.ms_index_path + str(n_block) + ".csv"
+        for s_term in l_terms_parm:
+            s_file_name = s_term[:4] + ".csv"
+            s_index_file = self.ms_index_path + s_file_name
+            if not os.path.exists(s_index_file):
+                s_file_name = s_term[:3] + ".csv"
+                s_index_file = self.ms_index_path + s_file_name
+            if not os.path.exists(s_index_file):
+                s_file_name = s_term[:2] + ".csv"
+                s_index_file = self.ms_index_path + s_file_name
+
+            #print("[INFO] Loading Index File {}".format(s_file_name))
             with open(s_index_file, 'r') as f_index:
                 for s_line in f_index.readlines():
                     l_tokens = s_line.rstrip().split(',')
-                    d_wiki_index[l_tokens[0]] = l_tokens[1:]
-            for s_term in l_terms_parm:
-                try:
-                    l_doc = d_wiki_index[s_term]
-                    WSE.d_query_index[s_term] += l_doc
-                    WSE.d_query_term_len[s_term] += len(l_doc)
-                except: pass
-            d_wiki_index.clear()
+                    if l_tokens[0] == s_term:
+                        WSE.d_query_index[s_term] = l_tokens[1:]
+                        WSE.d_query_term_len[s_term] = len(l_tokens) - 1
+                        break
 
     # creating query string from search string for lookup
     def getQueryString(self,
@@ -85,6 +88,7 @@ class WSE:
     # get value with the smallest key
     def getSmallestPostingListTerm(self,
                                    d_parm):
+        s = ""
         if len(d_parm) == 1:
             s = list(d_parm.keys())[0]
         else:
@@ -186,6 +190,8 @@ class WSE:
         d_relevant_files = defaultdict(list)
         for s_search in l_search_queries:
             s_search = s_search.rstrip()
+            if (s_search == ""):
+                continue
             l_terms = self.getQueryString(s_search.lower())
 
             # load the wiki index
