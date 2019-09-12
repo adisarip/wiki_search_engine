@@ -20,12 +20,9 @@ class WSE:
 
     def __init__(self,
                  index_path_parm,
-                 data_path_parm,
-                 search_file_parm):
+                 data_path_parm):
         self.ms_index_path = index_path_parm
         self.ms_data_path = data_path_parm
-        self.ms_search_file = search_file_parm
-        #self.mn_blocks = self.getBlocksData()
 
     # load the index file
     def loadIndex(self,
@@ -168,23 +165,13 @@ class WSE:
         return l_relevant
 
     # Search starts here
-    def run(self):
-        # read the list of search queries
-        f_search = open(self.ms_search_file, "r")
-        l_search_queries = f_search.readlines()
-        f_search.close()
-
+    def run(self, search_query_parm):
         d_relevant_files = defaultdict(list)
-        for s_search in l_search_queries:
-            s_search = s_search.rstrip()
-            # ignore empty lines in query file
-            if (s_search == ""):
-                continue
-            l_terms = self.getQueryString(s_search.lower())
+        l_terms = self.getQueryString(search_query_parm.lower())
 
-            # load the wiki index
-            self.loadIndex(l_terms)
+        # load the wiki index
+        self.loadIndex(l_terms)
 
-            l_result_docs = self.getQueryResult(l_terms)
-            d_relevant_files[s_search] = self.getKRelevantDocs(l_result_docs, 10)
+        l_result_docs = self.getQueryResult(l_terms)
+        d_relevant_files[search_query_parm] = self.getKRelevantDocs(l_result_docs, 10)
         return d_relevant_files

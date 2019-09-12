@@ -1,0 +1,56 @@
+
+(base) wiki_search_engine$ ./search.sh ./wikindex/
+[0 or 'q' to exit] Enter Search Query: gandhi
+
+=== Top 10 results ===
+Mahatma Gandhi
+Indira Gandhi
+Assassination of Mahatma Gandhi
+Rajiv Gandhi
+Rahul Gandhi
+Sonia Gandhi
+Indian National Congress campaign for the 2014 Indian general election
+Indian National Congress
+Salt March
+Gandhism
+===================================
+Search Time: 0:00:00.640375 seconds
+===================================
+
+[0 or 'q' to exit] Enter Search Query: mahatma gandhi
+
+=== Top 10 results ===
+Mahatma Gandhi
+Assassination of Mahatma Gandhi
+List of artistic depictions of Mahatma Gandhi
+Mahatma Mandir
+Mahatma Gandhi's visit to Ceylon
+Salt March
+Mahatma Gandhi New Series
+Wikipedia:Redirects for discussion/Log/2015 July 28
+Yugpurush (play)
+Jyotirao Phule
+===================================
+Search Time: 0:00:00.635820 seconds
+===================================
+
+[0 or 'q' to exit] Enter Search Query: nelson
+
+=== Top 10 results ===
+List of RiffTrax
+Willie Nelson
+Wikipedia:WikiProject Missing encyclopedic articles/NZ/New Zealand Historic Places Trust/Nelson II
+Horatio Nelson, 1st Viscount Nelson
+Nelson, New Zealand
+Bill Nelson
+Nelson (surname)
+Death of Nelson Mandela
+Russell M. Nelson
+Don Nelson
+===================================
+Search Time: 0:00:01.490886 seconds
+===================================
+
+[0 or 'q' to exit] Enter Search Query: q
+(base) wiki_search_engine$ 
+
