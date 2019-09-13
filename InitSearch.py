@@ -59,13 +59,7 @@ def main():
         print("===================================")
         print ("Search Time: {} seconds".format(tend - tstart))
         print("===================================\n")
-    
-    
-    
-    #outputResults(s_data_files_path,
-    #              d_relevant_files,
-    #              s_search_results_file)
-    #print ("[INFO] Check {} file for search results".format(s_search_results_file))
+
 
 if __name__ == '__main__':
     main()

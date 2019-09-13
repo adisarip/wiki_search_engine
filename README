@@ -1,0 +1,32 @@
+
+Welcome to Wikipedia English Search Engine !!!
+
+Steps to run:
+=============
+- Start the search engine by running the following command
+
+bash ./search.sh ./wikindex/
+
+- The "wikindex" directory contains the complete index
+- Once run, you will see a prompt to enter your search query.
+- Type anything you want to search
+- Search results will be displayed (within 1-2 secs. mostly < 1 sec).
+
+Details of the Source Code:
+===========================
+wikindex/           => has the index of the 75GB english wikipedia corpus
+wikixmlparser.py    => parse the complete xml file and create dataset
+wikindexer.py       => read the dataset and create data blocks [multiprocessing]
+InitCreateIndex.py  => create parser and indexer objects and initiate indexing process.
+MergeIndex.py       => Merge and split the data blocks in alphanumeric tree indexing.
+wikisearch.py       => Complete lookup and search logic, relevance merging postings list etc.
+InitSearch.py       => initiate the search
+index.sh            => wrapper to start indexing process
+search.sh           => wrapper to initiate search
+sample_run.txt      => same run output
+
+
+PS: wikindex is a 20GB Index split strategically to respond as early as possible.
+    This directory is not bundled with the zip archive because of its size.
+
+=== Start the engine !!! ===

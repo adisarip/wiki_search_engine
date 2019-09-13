@@ -51,6 +51,40 @@ Don Nelson
 Search Time: 0:00:01.490886 seconds
 ===================================
 
+[0 or 'q' to exit] Enter Search Query: osama bin laden
+
+=== Top 10 results ===
+Death of Osama bin Laden
+Al-Qaeda
+Manhunt for Osama bin Laden
+Wikipedia:WikiProject Spam/LinkReports/islamismland.googlepages.com
+Bin Laden family
+President Obama on Death of Osama bin Laden (SPOOF)
+Hamza bin Laden
+Osama (name)
+Wikipedia:Articles for deletion/Allegations of support system in Pakistan for Osama bin Laden (3rd nomination)
+Peter Bergen
+===================================
+Search Time: 0:00:01.034158 seconds
+===================================
+
+[0 or 'q' to exit] Enter Search Query: godse
+
+=== Top 10 results ===
+Assassination of Mahatma Gandhi
+Nathuram Godse
+Dattatraya Ganesh Godse
+Wikipedia:WikiProject Spam/LinkReports/ngodse.tripod.com
+Gopal Godse
+Mugdha Godse
+Hindu Mahasabha
+Me Nathuram Godse Boltoy
+Fashion (2008 film)
+Dattatraya Parchure
+===================================
+Search Time: 0:00:00.895675 seconds
+===================================
+
 [0 or 'q' to exit] Enter Search Query: q
 (base) wiki_search_engine$ 
 
