@@ -22,7 +22,7 @@ def worker(q_data_blocks_parm,
                 n_docs = n_last_block_count_parm
             else:
                 n_docs = gn_max_doc_count
-            
+
             o_wiki_indexer.run(n_block, n_docs)
         except Exception as exp:
             print("Execption in Process:", mp.current_process().name)
@@ -59,7 +59,7 @@ def main(d_penv_parm):
 
     for p in l_processes:
         p.join()
-    
+
     print ("[INFO] Index Creation Completed")
 
 
